@@ -204,22 +204,6 @@
         .quiz-restart-btn { padding: 15px 40px; background: var(--gradient-2); border: none; border-radius: 50px; color: #fff; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); font-family: inherit; }
         .quiz-restart-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
 
-        .updates { background: var(--secondary-dark); }
-        .updates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .update-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; transition: var(--transition); }
-        .update-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
-        .update-image { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; }
-        .update-1 { background: linear-gradient(135deg, #1a1a2e, #e63946); }
-        .update-2 { background: linear-gradient(135deg, #16213e, #d4a942); }
-        .update-3 { background: linear-gradient(135deg, #0f3460, #4a90d9); }
-        .update-category { position: absolute; top: 15px; left: 15px; padding: 5px 14px; background: var(--accent-red); border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .update-content { padding: 25px; }
-        .update-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .update-content h3 { font-size: 1.2rem; margin-bottom: 10px; line-height: 1.4; }
-        .update-content p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
-        .update-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-red); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-        .update-link:hover { gap: 14px; color: var(--accent-gold); }
-
         .newsletter { background: var(--primary-dark); position: relative; overflow: hidden; }
         .newsletter::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at center, rgba(230,57,70,0.05), transparent 70%); }
         .newsletter-inner { max-width: 700px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
@@ -281,7 +265,7 @@
 
         @media (max-width: 1024px) {
             .hero-title { font-size: 3rem; }
-            .research-grid, .updates-grid { grid-template-columns: repeat(2, 1fr); }
+            .research-grid { grid-template-columns: repeat(2, 1fr); }
             .footer-grid { grid-template-columns: 1fr 1fr; }
             .about-grid, .contact-grid { grid-template-columns: 1fr; }
             .quiz-card { padding: 32px 28px; }
@@ -294,7 +278,7 @@
             .hero-stats { gap: 30px; flex-wrap: wrap; }
             .stat-number { font-size: 2rem; }
             .section-title { font-size: 2rem; }
-            .research-grid, .updates-grid { grid-template-columns: 1fr; }
+            .research-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
             .hero-buttons { flex-direction: column; align-items: center; }
             .btn { width: 100%; max-width: 280px; justify-content: center; }
@@ -341,7 +325,6 @@
                     <li><a href="#research" class="nav-link">Research</a></li>
                     <li><a href="#gallery" class="nav-link">Gallery</a></li>
                     <li><a href="#quiz" class="nav-link">Quiz</a></li>
-                    <li><a href="#updates" class="nav-link">Updates</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                     <li><button class="nav-cta" onclick="document.getElementById('newsletter').scrollIntoView({behavior:'smooth'})">Subscribe</button></li>
                 </ul>
@@ -541,46 +524,6 @@
                         <br><br>
                         <button class="quiz-restart-btn" id="quizRestartBtn">Retake Quiz ↺</button>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- LATEST UPDATES -->
-        <section class="section updates" id="updates" aria-labelledby="updates-title">
-            <div class="container">
-                <div class="section-header animate-on-scroll">
-                    <span class="section-tag">Latest Updates</span>
-                    <h2 id="updates-title" class="section-title">Recent <span class="gradient-text">Publications &amp; News</span></h2>
-                    <p class="section-desc">Stay up to date with our latest research findings and market analyses.</p>
-                </div>
-                <div class="updates-grid">
-                    <article class="update-card animate-on-scroll">
-                        <div class="update-image update-1"><span class="update-category">Research Paper</span>📄</div>
-                        <div class="update-content">
-                            <div class="update-date"><span>📅</span> January 15, 2025</div>
-                            <h3>The Silent Collapse: Understanding Market Deaths in 2024</h3>
-                            <p>An in-depth analysis of market sectors that quietly declined in 2024, revealing patterns that predict future market vulnerabilities.</p>
-                            <a href="#" class="update-link" aria-label="Read full article about The Silent Collapse">Read Article →</a>
-                        </div>
-                    </article>
-                    <article class="update-card animate-on-scroll">
-                        <div class="update-image update-2"><span class="update-category">Analysis</span>📊</div>
-                        <div class="update-content">
-                            <div class="update-date"><span>📅</span> January 8, 2025</div>
-                            <h3>AI and the Future of Dead Markets: A Predictive Framework</h3>
-                            <p>How artificial intelligence is reshaping our understanding of market mortality and creating new tools for predicting economic downturns.</p>
-                            <a href="#" class="update-link" aria-label="Read full article about AI and Dead Markets">Read Article →</a>
-                        </div>
-                    </article>
-                    <article class="update-card animate-on-scroll">
-                        <div class="update-image update-3"><span class="update-category">Report</span>📋</div>
-                        <div class="update-content">
-                            <div class="update-date"><span>📅</span> December 28, 2024</div>
-                            <h3>Global Economic Outlook: What Dead Markets Tell Us About 2025</h3>
-                            <p>Our comprehensive annual report examining economic trends, emerging risks, and opportunities identified through dead market analysis.</p>
-                            <a href="#" class="update-link" aria-label="Read full article about Global Economic Outlook">Read Article →</a>
-                        </div>
-                    </article>
                 </div>
             </div>
         </section>
