@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,13 +8,7 @@
     <meta name="author" content="Kallol Chakrabarti">
     <title>Welcome to The Dead Market</title>
     <style>
-        /* ===== CSS RESET & BASE ===== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary-dark: #0a0a0a;
             --secondary-dark: #1a1a2e;
@@ -25,1802 +18,407 @@
             --text-light: #e0e0e0;
             --text-muted: #8a8a8a;
             --card-bg: #16213e;
-            --card-hover: #1a2a4a;
             --gradient-1: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
             --gradient-2: linear-gradient(135deg, #e63946 0%, #d4a942 100%);
             --shadow-glow: 0 0 30px rgba(230, 57, 70, 0.3);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--primary-dark); color: var(--text-light); line-height: 1.7; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        ul { list-style: none; }
+        img { max-width: 100%; height: auto; display: block; }
+
+        .skip-link { position: absolute; top: -100%; left: 50%; transform: translateX(-50%); background: var(--accent-red); color: #fff; padding: 12px 24px; z-index: 10000; border-radius: 0 0 8px 8px; font-weight: 600; transition: top 0.3s; }
+        .skip-link:focus { top: 0; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        *:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 3px; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--primary-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-red); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+
+        .loader-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s, visibility 0.5s; }
+        .loader-wrapper.hidden { opacity: 0; visibility: hidden; }
+        .loader { text-align: center; }
+        .loader-skull { font-size: 4rem; animation: pulse 1.5s ease-in-out infinite; margin-bottom: 20px; }
+        .loader-bar { width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin: 0 auto; }
+        .loader-bar::after { content: ''; display: block; width: 50%; height: 100%; background: var(--gradient-2); border-radius: 3px; animation: loading 1.2s ease-in-out infinite; }
+        @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
+
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .particle { position: absolute; width: 3px; height: 3px; background: var(--accent-red); border-radius: 50%; opacity: 0; animation: floatParticle 8s infinite; }
+        @keyframes floatParticle { 0% { opacity: 0; transform: translateY(100vh) scale(0); } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-10vh) scale(1); } }
+
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(10,10,10,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(230,57,70,0.2); transition: var(--transition); }
+        .header.scrolled { background: rgba(10,10,10,0.95); box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+        .header-inner { max-width: 1300px; margin: 0 auto; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; height: 80px; }
+        .logo { display: flex; align-items: center; gap: 12px; z-index: 1001; }
+        .logo-icon { font-size: 2rem; filter: drop-shadow(0 0 10px rgba(230,57,70,0.5)); }
+        .logo-text { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+        .logo-text .highlight { background: var(--gradient-2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-menu { display: flex; align-items: center; gap: 35px; }
+        .nav-link { font-size: 0.95rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; position: relative; padding: 5px 0; color: var(--text-muted); }
+        .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--gradient-2); transition: width 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--text-light); }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-cta { padding: 10px 24px; background: var(--gradient-2); border: none; border-radius: 25px; color: #fff; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: var(--transition); }
+        .nav-cta:hover { transform: scale(1.05); box-shadow: var(--shadow-glow); }
+        .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; z-index: 1001; background: none; border: none; padding: 5px; }
+        .hamburger span { width: 28px; height: 2px; background: var(--text-light); transition: var(--transition); border-radius: 2px; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+        .hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--gradient-1); overflow: hidden; }
+        .hero-bg-animation { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 50%, rgba(230,57,70,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(212,169,66,0.08) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(74,144,217,0.05) 0%, transparent 50%); }
+        .hero-grid-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px); background-size: 60px 60px; }
+        .hero-content { position: relative; z-index: 2; text-align: center; max-width: 900px; padding: 0 30px; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; background: rgba(230,57,70,0.15); border: 1px solid rgba(230,57,70,0.3); border-radius: 50px; font-size: 0.85rem; color: var(--accent-red); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; animation: fadeInDown 1s ease; }
+        .hero-badge .dot { width: 8px; height: 8px; background: var(--accent-red); border-radius: 50%; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .hero-title { font-size: 4rem; font-weight: 900; line-height: 1.1; margin-bottom: 25px; animation: fadeInUp 1s ease 0.2s both; }
+        .hero-title .line { display: block; }
+        .hero-title .gradient-text, .section-title .gradient-text { background: var(--gradient-2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-subtitle { font-size: 1.15rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 20px; animation: fadeInUp 1s ease 0.4s both; }
+        .hero-author { font-size: 0.95rem; color: var(--accent-gold); font-weight: 600; margin-bottom: 40px; animation: fadeInUp 1s ease 0.5s both; letter-spacing: 1px; }
+        .hero-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; animation: fadeInUp 1s ease 0.6s both; }
+        .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 35px; border-radius: 50px; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); border: none; }
+        .btn-primary { background: var(--gradient-2); color: #fff; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(230,57,70,0.4); }
+        .btn-secondary { background: transparent; color: var(--text-light); border: 2px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { border-color: var(--accent-gold); color: var(--accent-gold); transform: translateY(-3px); }
+        .hero-stats { display: flex; justify-content: center; gap: 60px; margin-top: 60px; animation: fadeInUp 1s ease 0.8s both; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2.5rem; font-weight: 900; background: var(--gradient-2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+        .hero-scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2; }
+        .hero-scroll-indicator a { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; }
+        .scroll-arrow { font-size: 1.2rem; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section { padding: 100px 30px; position: relative; z-index: 1; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-tag { display: inline-block; font-size: 0.8rem; color: var(--accent-red); text-transform: uppercase; letter-spacing: 3px; font-weight: 700; margin-bottom: 15px; }
+        .section-title { font-size: 2.8rem; font-weight: 800; margin-bottom: 15px; }
+        .section-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .about { background: var(--secondary-dark); }
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-image { position: relative; }
+        .about-image-wrapper { position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .about-image-wrapper::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(230,57,70,0.2), rgba(212,169,66,0.2)); z-index: 1; }
+        .about-img-placeholder { width: 100%; height: 400px; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); display: flex; align-items: center; justify-content: center; font-size: 6rem; position: relative; overflow: hidden; }
+        .about-img-placeholder::after { content: ''; position: absolute; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, rgba(230,57,70,0.1), transparent, rgba(212,169,66,0.1), transparent); animation: rotate 10s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .about-float-card { position: absolute; bottom: -20px; right: -20px; background: var(--card-bg); border: 1px solid rgba(230,57,70,0.3); padding: 20px 25px; border-radius: 15px; z-index: 3; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .about-float-card .number { font-size: 2rem; font-weight: 900; color: var(--accent-red); }
+        .about-float-card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .about-text p { color: var(--text-muted); margin-bottom: 20px; font-size: 1.02rem; }
+        .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .about-feature { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: rgba(230,57,70,0.08); border-radius: 10px; border: 1px solid rgba(230,57,70,0.15); font-size: 0.9rem; transition: var(--transition); }
+        .about-feature:hover { background: rgba(230,57,70,0.15); transform: translateX(5px); }
+        .about-feature .icon { font-size: 1.2rem; }
+
+        .research { background: var(--primary-dark); }
+        .research-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .research-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 40px 30px; transition: var(--transition); position: relative; overflow: hidden; }
+        .research-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--gradient-2); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+        .research-card:hover::before { transform: scaleX(1); }
+        .research-card:hover { transform: translateY(-8px); border-color: rgba(230,57,70,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .research-icon { width: 60px; height: 60px; border-radius: 15px; background: rgba(230,57,70,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 25px; }
+        .research-card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
+        .research-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+        .research-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-red); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .research-link:hover { gap: 15px; color: var(--accent-gold); }
+
+        .slider-section { background: var(--secondary-dark); overflow: hidden; }
+        .slider-container { position: relative; max-width: 900px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .slider { display: flex; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide { min-width: 100%; position: relative; }
+        .slide-image { width: 100%; height: 450px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .slide-1 { background: linear-gradient(135deg, #1a1a2e, #e63946); }
+        .slide-2 { background: linear-gradient(135deg, #16213e, #d4a942); }
+        .slide-3 { background: linear-gradient(135deg, #0f3460, #4a90d9); }
+        .slide-4 { background: linear-gradient(135deg, #1a1a2e, #e63946, #d4a942); }
+        .slide-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
+        .slide-overlay h3 { font-size: 1.5rem; margin-bottom: 8px; }
+        .slide-overlay p { color: var(--text-muted); font-size: 0.95rem; }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2); color: #fff; font-size: 1.2rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; z-index: 5; }
+        .slider-btn:hover { background: var(--accent-red); border-color: var(--accent-red); }
+        .slider-btn.prev { left: 20px; }
+        .slider-btn.next { right: 20px; }
+        .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }
+        .slider-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; cursor: pointer; transition: var(--transition); }
+        .slider-dot.active { background: var(--accent-red); transform: scale(1.2); }
+
+        /* ===== QUIZ SECTION ===== */
+        .quiz-section { background: var(--primary-dark); }
+        .quiz-wrapper { max-width: 860px; margin: 0 auto; }
+        .quiz-progress-bar-track { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; margin-bottom: 36px; overflow: hidden; }
+        .quiz-progress-bar-fill { height: 100%; background: var(--gradient-2); border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+        .quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 10px; }
+        .quiz-counter { font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+        .quiz-score-display { font-size: 0.82rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+        .quiz-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); border-radius: 22px; padding: 44px 48px; position: relative; overflow: hidden; }
+        .quiz-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient-2); }
+        .quiz-q-number { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; color: var(--accent-red); margin-bottom: 14px; }
+        .quiz-question-text { font-size: 1.3rem; font-weight: 700; line-height: 1.55; margin-bottom: 32px; color: var(--text-light); }
+        .quiz-options { display: flex; flex-direction: column; gap: 13px; margin-bottom: 28px; }
+        .quiz-option { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); cursor: pointer; transition: var(--transition); font-size: 0.97rem; color: var(--text-light); text-align: left; width: 100%; font-family: inherit; }
+        .quiz-option:hover:not(:disabled) { border-color: rgba(230,57,70,0.45); background: rgba(230,57,70,0.07); transform: translateX(4px); }
+        .quiz-option:disabled { cursor: default; }
+        .quiz-option.correct { border-color: #4caf50; background: rgba(76,175,80,0.1); }
+        .quiz-option.wrong { border-color: var(--accent-red); background: rgba(230,57,70,0.1); }
+        .quiz-option.reveal-correct { border-color: #4caf50; background: rgba(76,175,80,0.07); }
+        .option-letter { display: flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font-weight: 800; font-size: 0.82rem; text-transform: uppercase; flex-shrink: 0; transition: var(--transition); }
+        .quiz-option.correct .option-letter { background: #4caf50; border-color: #4caf50; color: #fff; }
+        .quiz-option.wrong .option-letter { background: var(--accent-red); border-color: var(--accent-red); color: #fff; }
+        .quiz-option.reveal-correct .option-letter { background: #4caf50; border-color: #4caf50; color: #fff; }
+        .option-status-icon { margin-left: auto; font-size: 1.1rem; flex-shrink: 0; opacity: 0; transition: opacity 0.2s; }
+        .quiz-option.correct .option-status-icon, .quiz-option.wrong .option-status-icon, .quiz-option.reveal-correct .option-status-icon { opacity: 1; }
+        .quiz-explanation { display: none; margin-top: 22px; padding: 20px 22px; border-radius: 12px; background: rgba(212,169,66,0.08); border: 1px solid rgba(212,169,66,0.25); font-size: 0.94rem; color: var(--text-muted); line-height: 1.75; animation: fadeInUp 0.4s ease both; }
+        .quiz-explanation.visible { display: block; }
+        .quiz-explanation strong { color: var(--accent-gold); font-weight: 700; }
+        .quiz-next-btn { display: none; margin-top: 28px; padding: 14px 36px; background: var(--gradient-2); border: none; border-radius: 50px; color: #fff; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); font-family: inherit; }
+        .quiz-next-btn.visible { display: inline-flex; align-items: center; gap: 10px; }
+        .quiz-next-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .quiz-result { display: none; text-align: center; padding: 20px 0; animation: fadeInUp 0.5s ease both; }
+        .quiz-result.visible { display: block; }
+        .result-trophy { font-size: 5rem; margin-bottom: 20px; display: block; animation: pulse 2s ease-in-out infinite; }
+        .result-score-circle { width: 140px; height: 140px; border-radius: 50%; background: var(--gradient-2); display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; flex-direction: column; box-shadow: 0 0 50px rgba(230,57,70,0.35); }
+        .result-score-number { font-size: 2.6rem; font-weight: 900; color: #fff; line-height: 1; }
+        .result-score-total { font-size: 0.8rem; color: rgba(255,255,255,0.75); letter-spacing: 1px; }
+        .result-title { font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
+        .result-message { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .result-grade-badge { display: inline-block; padding: 8px 24px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 32px; }
+        .grade-excellent { background: rgba(76,175,80,0.18); color: #4caf50; border: 1px solid rgba(76,175,80,0.4); }
+        .grade-good { background: rgba(212,169,66,0.18); color: var(--accent-gold); border: 1px solid rgba(212,169,66,0.4); }
+        .grade-average { background: rgba(74,144,217,0.18); color: var(--accent-blue); border: 1px solid rgba(74,144,217,0.4); }
+        .grade-poor { background: rgba(230,57,70,0.18); color: var(--accent-red); border: 1px solid rgba(230,57,70,0.4); }
+        .quiz-restart-btn { padding: 15px 40px; background: var(--gradient-2); border: none; border-radius: 50px; color: #fff; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); font-family: inherit; }
+        .quiz-restart-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+
+        .updates { background: var(--secondary-dark); }
+        .updates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .update-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; transition: var(--transition); }
+        .update-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .update-image { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; }
+        .update-1 { background: linear-gradient(135deg, #1a1a2e, #e63946); }
+        .update-2 { background: linear-gradient(135deg, #16213e, #d4a942); }
+        .update-3 { background: linear-gradient(135deg, #0f3460, #4a90d9); }
+        .update-category { position: absolute; top: 15px; left: 15px; padding: 5px 14px; background: var(--accent-red); border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .update-content { padding: 25px; }
+        .update-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .update-content h3 { font-size: 1.2rem; margin-bottom: 10px; line-height: 1.4; }
+        .update-content p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+        .update-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-red); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        .update-link:hover { gap: 14px; color: var(--accent-gold); }
+
+        .newsletter { background: var(--primary-dark); position: relative; overflow: hidden; }
+        .newsletter::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at center, rgba(230,57,70,0.05), transparent 70%); }
+        .newsletter-inner { max-width: 700px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+        .newsletter-form { display: flex; gap: 15px; margin-top: 35px; flex-wrap: wrap; justify-content: center; }
+        .newsletter-input { flex: 1; min-width: 280px; padding: 16px 24px; border-radius: 50px; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text-light); font-size: 1rem; outline: none; transition: var(--transition); font-family: inherit; }
+        .newsletter-input:focus { border-color: var(--accent-red); background: rgba(255,255,255,0.08); }
+        .newsletter-input::placeholder { color: var(--text-muted); }
+        .newsletter-btn { padding: 16px 35px; border-radius: 50px; border: none; background: var(--gradient-2); color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 1px; font-family: inherit; }
+        .newsletter-btn:hover { transform: scale(1.05); box-shadow: var(--shadow-glow); }
+        .form-message { margin-top: 15px; font-size: 0.9rem; display: none; }
+        .form-message.success { color: #4caf50; display: block; }
+        .form-message.error { color: var(--accent-red); display: block; }
+
+        .contact { background: var(--secondary-dark); }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .contact-info h3 { font-size: 1.8rem; margin-bottom: 20px; }
+        .contact-info p { color: var(--text-muted); margin-bottom: 30px; font-size: 1.02rem; }
+        .contact-details { display: flex; flex-direction: column; gap: 20px; }
+        .contact-item { display: flex; align-items: center; gap: 15px; padding: 18px 20px; background: rgba(230,57,70,0.08); border-radius: 12px; border: 1px solid rgba(230,57,70,0.15); transition: var(--transition); }
+        .contact-item:hover { background: rgba(230,57,70,0.15); transform: translateX(5px); }
+        .contact-item .icon { font-size: 1.5rem; }
+        .contact-item .text { font-size: 0.95rem; }
+        .contact-item .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .contact-form-wrapper { background: var(--card-bg); border-radius: 20px; padding: 40px; border: 1px solid rgba(255,255,255,0.05); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .form-group input, .form-group textarea { width: 100%; padding: 14px 18px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text-light); font-size: 1rem; font-family: inherit; outline: none; transition: var(--transition); }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-red); }
+        .form-group textarea { height: 120px; resize: vertical; }
+        .form-group input.error, .form-group textarea.error { border-color: var(--accent-red); }
+        .field-error { font-size: 0.8rem; color: var(--accent-red); margin-top: 5px; display: none; }
+        .submit-btn { width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--gradient-2); color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 1.5px; font-family: inherit; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+        .contact-form-message { margin-top: 15px; text-align: center; font-size: 0.9rem; display: none; }
+
+        .back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; border-radius: 50%; background: var(--gradient-2); border: none; color: #fff; font-size: 1.2rem; cursor: pointer; z-index: 999; opacity: 0; visibility: hidden; transition: var(--transition); display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 20px rgba(230,57,70,0.4); }
+        .back-to-top.visible { opacity: 1; visibility: visible; }
+        .back-to-top:hover { transform: scale(1.1); }
+
+        .footer { background: #050510; padding: 80px 30px 0; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 50px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .footer-brand .logo { margin-bottom: 20px; }
+        .footer-brand p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; }
+        .footer-social { display: flex; gap: 12px; }
+        .social-link { width: 42px; height: 42px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; transition: var(--transition); font-size: 1.1rem; }
+        .social-link:hover { background: var(--accent-red); border-color: var(--accent-red); transform: translateY(-3px); }
+        .footer-column h4 { font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; color: var(--text-light); }
+        .footer-links { display: flex; flex-direction: column; gap: 12px; }
+        .footer-links a { color: var(--text-muted); font-size: 0.9rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--accent-red); padding-left: 5px; }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 25px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+        .footer-bottom p { color: var(--text-muted); font-size: 0.85rem; }
+        .footer-bottom-links { display: flex; gap: 25px; }
+        .footer-bottom-links a { color: var(--text-muted); font-size: 0.85rem; }
+        .footer-bottom-links a:hover { color: var(--accent-red); }
+
+        .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .animate-on-scroll.animated { opacity: 1; transform: translateY(0); }
 
-        html {
-            scroll-behavior: smooth;
-            font-size: 16px;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--primary-dark);
-            color: var(--text-light);
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition);
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* ===== ACCESSIBILITY ===== */
-        .skip-link {
-            position: absolute;
-            top: -100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-red);
-            color: #fff;
-            padding: 12px 24px;
-            z-index: 10000;
-            border-radius: 0 0 8px 8px;
-            font-weight: 600;
-            transition: top 0.3s;
-        }
-
-        .skip-link:focus {
-            top: 0;
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        *:focus-visible {
-            outline: 2px solid var(--accent-gold);
-            outline-offset: 3px;
-        }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--primary-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-red);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-gold);
-        }
-
-        /* ===== LOADING SCREEN ===== */
-        .loader-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s, visibility 0.5s;
-        }
-
-        .loader-wrapper.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loader {
-            text-align: center;
-        }
-
-        .loader-skull {
-            font-size: 4rem;
-            animation: pulse 1.5s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-
-        .loader-bar {
-            width: 200px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-
-        .loader-bar::after {
-            content: '';
-            display: block;
-            width: 50%;
-            height: 100%;
-            background: var(--gradient-2);
-            border-radius: 3px;
-            animation: loading 1.2s ease-in-out infinite;
-        }
-
-        @keyframes loading {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-        }
-
-        /* ===== PARTICLE BACKGROUND ===== */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: var(--accent-red);
-            border-radius: 50%;
-            opacity: 0;
-            animation: floatParticle 8s infinite;
-        }
-
-        @keyframes floatParticle {
-            0% { opacity: 0; transform: translateY(100vh) scale(0); }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { opacity: 0; transform: translateY(-10vh) scale(1); }
-        }
-
-        /* ===== HEADER ===== */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(230, 57, 70, 0.2);
-            transition: var(--transition);
-        }
-
-        .header.scrolled {
-            background: rgba(10, 10, 10, 0.95);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .header-inner {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 80px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1001;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-            filter: drop-shadow(0 0 10px rgba(230, 57, 70, 0.5));
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .logo-text .highlight {
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 35px;
-        }
-
-        .nav-link {
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            position: relative;
-            padding: 5px 0;
-            color: var(--text-muted);
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-2);
-            transition: width 0.3s;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--text-light);
-        }
-
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-
-        .nav-cta {
-            padding: 10px 24px;
-            background: var(--gradient-2);
-            border: none;
-            border-radius: 25px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .nav-cta:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-glow);
-        }
-
-        /* Hamburger */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 6px;
-            cursor: pointer;
-            z-index: 1001;
-            background: none;
-            border: none;
-            padding: 5px;
-        }
-
-        .hamburger span {
-            width: 28px;
-            height: 2px;
-            background: var(--text-light);
-            transition: var(--transition);
-            border-radius: 2px;
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 6px);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -6px);
-        }
-
-        /* ===== HERO SECTION ===== */
-        .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--gradient-1);
-            overflow: hidden;
-        }
-
-        .hero-bg-animation {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(ellipse at 20% 50%, rgba(230, 57, 70, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(212, 169, 66, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(74, 144, 217, 0.05) 0%, transparent 50%);
-        }
-
-        .hero-grid-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(230, 57, 70, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(230, 57, 70, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 900px;
-            padding: 0 30px;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 20px;
-            background: rgba(230, 57, 70, 0.15);
-            border: 1px solid rgba(230, 57, 70, 0.3);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            color: var(--accent-red);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            animation: fadeInDown 1s ease;
-        }
-
-        .hero-badge .dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-red);
-            border-radius: 50%;
-            animation: blink 2s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .hero-title {
-            font-size: 4rem;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 25px;
-            animation: fadeInUp 1s ease 0.2s both;
-        }
-
-        .hero-title .line {
-            display: block;
-        }
-
-        .hero-title .gradient-text {
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto 20px;
-            animation: fadeInUp 1s ease 0.4s both;
-        }
-
-        .hero-author {
-            font-size: 0.95rem;
-            color: var(--accent-gold);
-            font-weight: 600;
-            margin-bottom: 40px;
-            animation: fadeInUp 1s ease 0.5s both;
-            letter-spacing: 1px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 1s ease 0.6s both;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--gradient-2);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(230, 57, 70, 0.4);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-light);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent-gold);
-            color: var(--accent-gold);
-            transform: translateY(-3px);
-        }
-
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            margin-top: 60px;
-            animation: fadeInUp 1s ease 0.8s both;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 5px;
-        }
-
-        .hero-scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            animation: bounce 2s infinite;
-        }
-
-        .hero-scroll-indicator a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .scroll-arrow {
-            font-size: 1.2rem;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(8px); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== SECTION COMMON ===== */
-        .section {
-            padding: 100px 30px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .section-tag {
-            display: inline-block;
-            font-size: 0.8rem;
-            color: var(--accent-red);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            font-size: 2.8rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-        }
-
-        .section-title .gradient-text {
-            background: var(--gradient-2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .section-desc {
-            font-size: 1.05rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* ===== ABOUT SECTION ===== */
-        .about {
-            background: var(--secondary-dark);
-        }
-
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .about-image {
-            position: relative;
-        }
-
-        .about-image-wrapper {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .about-image-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(230, 57, 70, 0.2), rgba(212, 169, 66, 0.2));
-            z-index: 1;
-        }
-
-        .about-img-placeholder {
-            width: 100%;
-            height: 400px;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 6rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .about-img-placeholder::after {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(230, 57, 70, 0.1), transparent, rgba(212, 169, 66, 0.1), transparent);
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .about-float-card {
-            position: absolute;
-            bottom: -20px;
-            right: -20px;
-            background: var(--card-bg);
-            border: 1px solid rgba(230, 57, 70, 0.3);
-            padding: 20px 25px;
-            border-radius: 15px;
-            z-index: 3;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .about-float-card .number {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--accent-red);
-        }
-
-        .about-float-card .label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .about-text h3 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-
-        .about-text p {
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            font-size: 1.02rem;
-        }
-
-        .about-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .about-feature {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            background: rgba(230, 57, 70, 0.08);
-            border-radius: 10px;
-            border: 1px solid rgba(230, 57, 70, 0.15);
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-
-        .about-feature:hover {
-            background: rgba(230, 57, 70, 0.15);
-            transform: translateX(5px);
-        }
-
-        .about-feature .icon {
-            font-size: 1.2rem;
-        }
-
-        /* ===== RESEARCH HIGHLIGHTS ===== */
-        .research {
-            background: var(--primary-dark);
-        }
-
-        .research-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-        }
-
-        .research-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 40px 30px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .research-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--gradient-2);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s;
-        }
-
-        .research-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .research-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(230, 57, 70, 0.3);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-        }
-
-        .research-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            background: rgba(230, 57, 70, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-        }
-
-        .research-card h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .research-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-
-        .research-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent-red);
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .research-link:hover {
-            gap: 15px;
-            color: var(--accent-gold);
-        }
-
-        /* ===== IMAGE SLIDER ===== */
-        .slider-section {
-            background: var(--secondary-dark);
-            overflow: hidden;
-        }
-
-        .slider-container {
-            position: relative;
-            max-width: 900px;
-            margin: 0 auto;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .slider {
-            display: flex;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .slide {
-            min-width: 100%;
-            position: relative;
-        }
-
-        .slide-image {
-            width: 100%;
-            height: 450px;
-            object-fit: cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-        }
-
-        .slide-1 {
-            background: linear-gradient(135deg, #1a1a2e, #e63946);
-        }
-
-        .slide-2 {
-            background: linear-gradient(135deg, #16213e, #d4a942);
-        }
-
-        .slide-3 {
-            background: linear-gradient(135deg, #0f3460, #4a90d9);
-        }
-
-        .slide-4 {
-            background: linear-gradient(135deg, #1a1a2e, #e63946, #d4a942);
-        }
-
-        .slide-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 40px;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-        }
-
-        .slide-overlay h3 {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-
-        .slide-overlay p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-
-        .slider-btn:hover {
-            background: var(--accent-red);
-            border-color: var(--accent-red);
-        }
-
-        .slider-btn.prev {
-            left: 20px;
-        }
-
-        .slider-btn.next {
-            right: 20px;
-        }
-
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .slider-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .slider-dot.active {
-            background: var(--accent-red);
-            transform: scale(1.2);
-        }
-
-        /* ===== TESTIMONIALS ===== */
-        .testimonials {
-            background: var(--primary-dark);
-        }
-
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-        }
-
-        .testimonial-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 35px;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(212, 169, 66, 0.3);
-        }
-
-        .testimonial-quote {
-            font-size: 2.5rem;
-            color: var(--accent-gold);
-            opacity: 0.3;
-            position: absolute;
-            top: 20px;
-            right: 25px;
-        }
-
-        .testimonial-stars {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 15px;
-            color: var(--accent-gold);
-            font-size: 0.9rem;
-        }
-
-        .testimonial-text {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            font-style: italic;
-            margin-bottom: 25px;
-            line-height: 1.8;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .testimonial-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--gradient-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #fff;
-        }
-
-        .testimonial-info h4 {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .testimonial-info span {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* ===== LATEST UPDATES ===== */
-        .updates {
-            background: var(--secondary-dark);
-        }
-
-        .updates-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-        }
-
-        .update-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .update-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-        }
-
-        .update-image {
-            width: 100%;
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            position: relative;
-        }
-
-        .update-1 {
-            background: linear-gradient(135deg, #1a1a2e, #e63946);
-        }
-
-        .update-2 {
-            background: linear-gradient(135deg, #16213e, #d4a942);
-        }
-
-        .update-3 {
-            background: linear-gradient(135deg, #0f3460, #4a90d9);
-        }
-
-        .update-category {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            padding: 5px 14px;
-            background: var(--accent-red);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .update-content {
-            padding: 25px;
-        }
-
-        .update-date {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .update-content h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        .update-content p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-        }
-
-        .update-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent-red);
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .update-link:hover {
-            gap: 14px;
-            color: var(--accent-gold);
-        }
-
-        /* ===== NEWSLETTER ===== */
-        .newsletter {
-            background: var(--primary-dark);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .newsletter::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at center, rgba(230, 57, 70, 0.05), transparent 70%);
-        }
-
-        .newsletter-inner {
-            max-width: 700px;
-            margin: 0 auto;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .newsletter-form {
-            display: flex;
-            gap: 15px;
-            margin-top: 35px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .newsletter-input {
-            flex: 1;
-            min-width: 280px;
-            padding: 16px 24px;
-            border-radius: 50px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
-            font-size: 1rem;
-            outline: none;
-            transition: var(--transition);
-        }
-
-        .newsletter-input:focus {
-            border-color: var(--accent-red);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .newsletter-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .newsletter-btn {
-            padding: 16px 35px;
-            border-radius: 50px;
-            border: none;
-            background: var(--gradient-2);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .newsletter-btn:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .form-message {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .form-message.success {
-            color: #4caf50;
-            display: block;
-        }
-
-        .form-message.error {
-            color: var(--accent-red);
-            display: block;
-        }
-
-        /* ===== CONTACT FORM ===== */
-        .contact {
-            background: var(--secondary-dark);
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-        }
-
-        .contact-info h3 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
-
-        .contact-info p {
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            font-size: 1.02rem;
-        }
-
-        .contact-details {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 18px 20px;
-            background: rgba(230, 57, 70, 0.08);
-            border-radius: 12px;
-            border: 1px solid rgba(230, 57, 70, 0.15);
-            transition: var(--transition);
-        }
-
-        .contact-item:hover {
-            background: rgba(230, 57, 70, 0.15);
-            transform: translateX(5px);
-        }
-
-        .contact-item .icon {
-            font-size: 1.5rem;
-        }
-
-        .contact-item .text {
-            font-size: 0.95rem;
-        }
-
-        .contact-item .label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .contact-form-wrapper {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
-            font-size: 1rem;
-            font-family: inherit;
-            outline: none;
-            transition: var(--transition);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: var(--accent-red);
-        }
-
-        .form-group textarea {
-            height: 120px;
-            resize: vertical;
-        }
-
-        .form-group input.error,
-        .form-group textarea.error {
-            border-color: var(--accent-red);
-        }
-
-        .field-error {
-            font-size: 0.8rem;
-            color: var(--accent-red);
-            margin-top: 5px;
-            display: none;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 10px;
-            border: none;
-            background: var(--gradient-2);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .contact-form-message {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        /* ===== BACK TO TOP ===== */
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--gradient-2);
-            border: none;
-            color: #fff;
-            font-size: 1.2rem;
-            cursor: pointer;
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(230, 57, 70, 0.4);
-        }
-
-        .back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .back-to-top:hover {
-            transform: scale(1.1);
-        }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            background: #050510;
-            padding: 80px 30px 0;
-        }
-
-        .footer-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-            padding-bottom: 50px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .footer-brand .logo {
-            margin-bottom: 20px;
-        }
-
-        .footer-brand p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-        }
-
-        .footer-social {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-link {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            font-size: 1.1rem;
-        }
-
-        .social-link:hover {
-            background: var(--accent-red);
-            border-color: var(--accent-red);
-            transform: translateY(-3px);
-        }
-
-        .footer-column h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            color: var(--text-light);
-        }
-
-        .footer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .footer-links a {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            color: var(--accent-red);
-            padding-left: 5px;
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 25px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .footer-bottom p {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .footer-bottom-links {
-            display: flex;
-            gap: 25px;
-        }
-
-        .footer-bottom-links a {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .footer-bottom-links a:hover {
-            color: var(--accent-red);
-        }
-
-        /* ===== ANIMATIONS ON SCROLL ===== */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-
-        .animate-on-scroll.animated {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 3rem;
-            }
-
-            .research-grid,
-            .testimonials-grid,
-            .updates-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
+            .hero-title { font-size: 3rem; }
+            .research-grid, .updates-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .about-grid, .contact-grid { grid-template-columns: 1fr; }
+            .quiz-card { padding: 32px 28px; }
         }
-
         @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-
-            .nav-menu {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 80%;
-                max-width: 350px;
-                height: 100vh;
-                background: rgba(10, 10, 10, 0.98);
-                backdrop-filter: blur(20px);
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 30px;
-                transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                border-left: 1px solid rgba(230, 57, 70, 0.2);
-            }
-
-            .nav-menu.open {
-                right: 0;
-            }
-
-            .nav-link {
-                font-size: 1.1rem;
-            }
-
-            .hero-title {
-                font-size: 2.2rem;
-            }
-
-            .hero-stats {
-                gap: 30px;
-                flex-wrap: wrap;
-            }
-
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .research-grid,
-            .testimonials-grid,
-            .updates-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn {
-                width: 100%;
-                max-width: 280px;
-                justify-content: center;
-            }
-
-            .about-features {
-                grid-template-columns: 1fr;
-            }
-
-            .slide-image {
-                height: 300px;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
+            .hamburger { display: flex; }
+            .nav-menu { position: fixed; top: 0; right: -100%; width: 80%; max-width: 350px; height: 100vh; background: rgba(10,10,10,0.98); backdrop-filter: blur(20px); flex-direction: column; align-items: center; justify-content: center; gap: 30px; transition: right 0.4s cubic-bezier(0.4,0,0.2,1); border-left: 1px solid rgba(230,57,70,0.2); }
+            .nav-menu.open { right: 0; }
+            .hero-title { font-size: 2.2rem; }
+            .hero-stats { gap: 30px; flex-wrap: wrap; }
+            .stat-number { font-size: 2rem; }
+            .section-title { font-size: 2rem; }
+            .research-grid, .updates-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 280px; justify-content: center; }
+            .about-features { grid-template-columns: 1fr; }
+            .slide-image { height: 300px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .quiz-card { padding: 26px 20px; }
+            .quiz-question-text { font-size: 1.1rem; }
         }
-
         @media (max-width: 480px) {
-            .header-inner {
-                padding: 0 20px;
-                height: 70px;
-            }
-
-            .logo-text {
-                font-size: 1.2rem;
-            }
-
-            .section {
-                padding: 70px 20px;
-            }
-
-            .hero-title {
-                font-size: 1.8rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-
-            .contact-form-wrapper {
-                padding: 25px;
-            }
+            .header-inner { padding: 0 20px; height: 70px; }
+            .logo-text { font-size: 1.2rem; }
+            .section { padding: 70px 20px; }
+            .hero-title { font-size: 1.8rem; }
+            .contact-form-wrapper, .quiz-card { padding: 22px 16px; }
         }
-
-        /* ===== DARK MODE / HIGH CONTRAST (prefers-color-scheme) ===== */
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
         }
     </style>
 </head>
 <body>
-    <!-- Skip Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- Loading Screen -->
     <div class="loader-wrapper" id="loader" role="status" aria-label="Loading">
         <div class="loader">
             <div class="loader-skull">💀</div>
             <div class="loader-bar"></div>
-            <p style="margin-top: 15px; color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px;">LOADING THE DEAD MARKET...</p>
+            <p style="margin-top:15px;color:var(--text-muted);font-size:0.85rem;letter-spacing:2px;">LOADING THE DEAD MARKET...</p>
         </div>
     </div>
 
-    <!-- Particle Background -->
     <div class="particles" id="particles" aria-hidden="true"></div>
 
-    <!-- ===== HEADER ===== -->
     <header class="header" id="header" role="banner">
         <div class="header-inner">
             <a href="#" class="logo" aria-label="The Dead Market Home">
                 <span class="logo-icon">💀</span>
                 <span class="logo-text">The <span class="highlight">Dead</span> Market</span>
             </a>
-
             <nav role="navigation" aria-label="Main navigation">
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="#about" class="nav-link active">About</a></li>
                     <li><a href="#research" class="nav-link">Research</a></li>
                     <li><a href="#gallery" class="nav-link">Gallery</a></li>
-                    <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+                    <li><a href="#quiz" class="nav-link">Quiz</a></li>
                     <li><a href="#updates" class="nav-link">Updates</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                     <li><button class="nav-cta" onclick="document.getElementById('newsletter').scrollIntoView({behavior:'smooth'})">Subscribe</button></li>
                 </ul>
             </nav>
-
             <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </button>
         </div>
     </header>
 
-    <!-- ===== HERO SECTION ===== -->
     <section class="hero" role="banner" aria-label="Hero section">
         <div class="hero-bg-animation" aria-hidden="true"></div>
         <div class="hero-grid-overlay" aria-hidden="true"></div>
-
         <div class="hero-content">
-            <div class="hero-badge">
-                <span class="dot" aria-hidden="true"></span>
-                Independent Research Platform
-            </div>
-
+            <div class="hero-badge"><span class="dot" aria-hidden="true"></span>Independent Research Platform</div>
             <h1 class="hero-title">
                 <span class="line">Welcome to</span>
                 <span class="line"><span class="gradient-text">The Dead Market</span></span>
             </h1>
-
-            <p class="hero-subtitle">
-                Uncovering hidden truths in global markets through independent, unbiased research. Exploring the intersection of economics, data science, and market behavior.
-            </p>
-
+            <p class="hero-subtitle">Uncovering hidden patterns, systemic inefficiencies, and economic phenomena that mainstream financial analysis frequently misses — through independent, unbiased, and data-driven research.</p>
             <p class="hero-author">Created by Kallol Chakrabarti, Global Independent Researcher</p>
-
             <div class="hero-buttons">
-                <a href="#research" class="btn btn-primary">
-                    Explore Research →
-                </a>
-                <a href="#about" class="btn btn-secondary">
-                    Learn More ↓
-                </a>
+                <a href="#research" class="btn btn-primary">Explore Research →</a>
+                <a href="#about" class="btn btn-secondary">Learn More ↓</a>
             </div>
-
             <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-number" data-target="150">0</div>
-                    <div class="stat-label">Research Papers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-target="45">0</div>
-                    <div class="stat-label">Countries Analyzed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-target="12">0</div>
-                    <div class="stat-label">Years of Research</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-target="500">0</div>
-                    <div class="stat-label">Data Points (K)</div>
-                </div>
+                <div class="stat-item"><div class="stat-number" style="-webkit-text-fill-color:unset;background:none;color:var(--accent-red);">6</div><div class="stat-label">Research Domains</div></div>
+                <div class="stat-item"><div class="stat-number" style="-webkit-text-fill-color:unset;background:none;color:var(--accent-red);">Open</div><div class="stat-label">Access Platform</div></div>
+                <div class="stat-item"><div class="stat-number" style="-webkit-text-fill-color:unset;background:none;color:var(--accent-red);">2026</div><div class="stat-label">Founded</div></div>
+                <div class="stat-item"><div class="stat-number" style="-webkit-text-fill-color:unset;background:none;color:var(--accent-red);">100%</div><div class="stat-label">Independent</div></div>
             </div>
         </div>
-
         <div class="hero-scroll-indicator">
             <a href="#about" aria-label="Scroll to About section">
-                <span>Scroll Down</span>
-                <span class="scroll-arrow" aria-hidden="true">⌄</span>
+                <span>Scroll Down</span><span class="scroll-arrow" aria-hidden="true">⌄</span>
             </a>
         </div>
     </section>
 
-    <!-- ===== MAIN CONTENT ===== -->
     <main id="main-content">
 
-        <!-- ===== ABOUT THE MARKET ===== -->
+        <!-- ABOUT -->
         <section class="section about" id="about" aria-labelledby="about-title">
             <div class="container">
                 <div class="about-grid">
                     <div class="about-image animate-on-scroll">
                         <div class="about-image-wrapper">
-                            <div class="about-img-placeholder" role="img" aria-label="Abstract market visualization">
-                                📊
-                            </div>
+                            <div class="about-img-placeholder" role="img" aria-label="Abstract market visualization">📊</div>
                         </div>
                         <div class="about-float-card">
-                            <div class="number">12+</div>
-                            <div class="label">Years of Expertise</div>
+                            <div class="number" style="font-size:1.1rem;line-height:1.2;">Open</div>
+                            <div class="label">Access Research</div>
                         </div>
                     </div>
-
                     <div class="about-text animate-on-scroll">
                         <span class="section-tag">About the Market</span>
                         <h2 id="about-title" class="section-title">Understanding the <span class="gradient-text">Dead Market</span> Phenomenon</h2>
                         <p>
-                            The Dead Market is a comprehensive research platform dedicated to exploring the overlooked corners of global financial markets. Our mission is to shed light on market inefficiencies, hidden patterns, and economic phenomena that traditional analysis often misses.
+                            The Dead Market is an independent economic research platform dedicated to exploring the overlooked corners of global financial markets. The platform uncovers hidden patterns, systemic inefficiencies, and economic phenomena that mainstream financial analysis frequently misses.
                         </p>
                         <p>
-                            Founded by Kallol Chakrabarti, a global independent researcher with over a decade of experience in market analysis, data science, and economic theory, The Dead Market provides cutting-edge insights that challenge conventional market wisdom.
+                            Founded by Kallol Chakrabarti — a global independent researcher working across financial market analysis, quantitative data science, and economic theory — The Dead Market operates fully independently, unaffiliated with any financial institution, brokerage, or government body. Its commitment to open, transparent, and academically rigorous research dissemination underpins every aspect of the platform.
                         </p>
-
                         <div class="about-features">
-                            <div class="about-feature">
-                                <span class="icon" aria-hidden="true">🔍</span>
-                                <span>Deep Market Analysis</span>
-                            </div>
-                            <div class="about-feature">
-                                <span class="icon" aria-hidden="true">📈</span>
-                                <span>Quantitative Research</span>
-                            </div>
-                            <div class="about-feature">
-                                <span class="icon" aria-hidden="true">🌍</span>
-                                <span>Global Perspective</span>
-                            </div>
-                            <div class="about-feature">
-                                <span class="icon" aria-hidden="true">🧠</span>
-                                <span>Behavioral Economics</span>
-                            </div>
-                            <div class="about-feature">
-                                <span class="icon" aria-hidden="true">📊</span>
-                                <span>Data-Driven Insights</span>
-                            </div>
-                            <div class="about-feature">
-                                <span class="icon" aria-hidden="true">🔬</span>
-                                <span>Independent Research</span>
-                            </div>
+                            <div class="about-feature"><span class="icon" aria-hidden="true">🔍</span><span>Deep Market Analysis</span></div>
+                            <div class="about-feature"><span class="icon" aria-hidden="true">📈</span><span>Quantitative Research</span></div>
+                            <div class="about-feature"><span class="icon" aria-hidden="true">🌍</span><span>Global Perspective</span></div>
+                            <div class="about-feature"><span class="icon" aria-hidden="true">🧠</span><span>Behavioral Economics</span></div>
+                            <div class="about-feature"><span class="icon" aria-hidden="true">📊</span><span>Data-Driven Insights</span></div>
+                            <div class="about-feature"><span class="icon" aria-hidden="true">🔬</span><span>Independent Research</span></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ===== RESEARCH HIGHLIGHTS ===== -->
+        <!-- RESEARCH -->
         <section class="section research" id="research" aria-labelledby="research-title">
             <div class="container">
                 <div class="section-header animate-on-scroll">
@@ -1828,7 +426,6 @@
                     <h2 id="research-title" class="section-title">Our Key <span class="gradient-text">Research Areas</span></h2>
                     <p class="section-desc">Exploring the depths of market dynamics through rigorous analysis and innovative methodology.</p>
                 </div>
-
                 <div class="research-grid">
                     <article class="research-card animate-on-scroll" tabindex="0">
                         <div class="research-icon" aria-hidden="true">📉</div>
@@ -1836,35 +433,30 @@
                         <p>Studying the lifecycle of markets — from birth through maturity to decline. Understanding why markets die and the economic implications of their demise.</p>
                         <a href="#" class="research-link" aria-label="Read more about Market Mortality Analysis">Read More →</a>
                     </article>
-
                     <article class="research-card animate-on-scroll" tabindex="0">
                         <div class="research-icon" aria-hidden="true">🔗</div>
                         <h3>Systemic Risk Networks</h3>
                         <p>Mapping the interconnected web of global financial systems to identify vulnerabilities and predict potential cascading failures across markets.</p>
                         <a href="#" class="research-link" aria-label="Read more about Systemic Risk Networks">Read More →</a>
                     </article>
-
                     <article class="research-card animate-on-scroll" tabindex="0">
                         <div class="research-icon" aria-hidden="true">🧬</div>
                         <h3>Behavioral Anomalies</h3>
                         <p>Investigating irrational market behaviors, cognitive biases among traders, and the psychological underpinnings of market bubbles and crashes.</p>
                         <a href="#" class="research-link" aria-label="Read more about Behavioral Anomalies">Read More →</a>
                     </article>
-
                     <article class="research-card animate-on-scroll" tabindex="0">
                         <div class="research-icon" aria-hidden="true">🌐</div>
                         <h3>Emerging Market Dynamics</h3>
                         <p>Analyzing the unique characteristics and growth patterns of emerging markets, with a focus on untapped potential and hidden risks.</p>
                         <a href="#" class="research-link" aria-label="Read more about Emerging Market Dynamics">Read More →</a>
                     </article>
-
                     <article class="research-card animate-on-scroll" tabindex="0">
                         <div class="research-icon" aria-hidden="true">⚡</div>
-                        <h3>Crypto & Digital Assets</h3>
+                        <h3>Crypto &amp; Digital Assets</h3>
                         <p>Exploring the rapidly evolving landscape of cryptocurrency markets, DeFi protocols, and the future of digital asset valuations.</p>
-                        <a href="#" class="research-link" aria-label="Read more about Crypto & Digital Assets">Read More →</a>
+                        <a href="#" class="research-link" aria-label="Read more about Crypto &amp; Digital Assets">Read More →</a>
                     </article>
-
                     <article class="research-card animate-on-scroll" tabindex="0">
                         <div class="research-icon" aria-hidden="true">🏛️</div>
                         <h3>Policy Impact Studies</h3>
@@ -1875,7 +467,7 @@
             </div>
         </section>
 
-        <!-- ===== IMAGE SLIDER ===== -->
+        <!-- GALLERY SLIDER -->
         <section class="section slider-section" id="gallery" aria-labelledby="gallery-title">
             <div class="container">
                 <div class="section-header animate-on-scroll">
@@ -1883,43 +475,28 @@
                     <h2 id="gallery-title" class="section-title">Research <span class="gradient-text">Gallery</span></h2>
                     <p class="section-desc">Visual representations of our research findings and market analyses.</p>
                 </div>
-
                 <div class="slider-container animate-on-scroll" role="region" aria-label="Image slider" aria-roledescription="carousel">
                     <div class="slider" id="slider">
                         <div class="slide" role="group" aria-roledescription="slide" aria-label="1 of 4">
                             <div class="slide-image slide-1">📊</div>
-                            <div class="slide-overlay">
-                                <h3>Global Market Heat Map</h3>
-                                <p>Visualizing market performance across 45 countries in real-time data analysis.</p>
-                            </div>
+                            <div class="slide-overlay"><h3>Global Market Heat Map</h3><p>Visualizing market performance across 45 countries in real-time data analysis.</p></div>
                         </div>
                         <div class="slide" role="group" aria-roledescription="slide" aria-label="2 of 4">
                             <div class="slide-image slide-2">📈</div>
-                            <div class="slide-overlay">
-                                <h3>Trend Analysis Dashboard</h3>
-                                <p>Multi-dimensional trend analysis revealing hidden market patterns and correlations.</p>
-                            </div>
+                            <div class="slide-overlay"><h3>Trend Analysis Dashboard</h3><p>Multi-dimensional trend analysis revealing hidden market patterns and correlations.</p></div>
                         </div>
                         <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
                             <div class="slide-image slide-3">🌍</div>
-                            <div class="slide-overlay">
-                                <h3>Economic Flow Visualization</h3>
-                                <p>Mapping global capital flows and their impact on regional market dynamics.</p>
-                            </div>
+                            <div class="slide-overlay"><h3>Economic Flow Visualization</h3><p>Mapping global capital flows and their impact on regional market dynamics.</p></div>
                         </div>
                         <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
                             <div class="slide-image slide-4">🔬</div>
-                            <div class="slide-overlay">
-                                <h3>Research Methodology Framework</h3>
-                                <p>Our proprietary analytical framework for understanding market mortality cycles.</p>
-                            </div>
+                            <div class="slide-overlay"><h3>Research Methodology Framework</h3><p>Our proprietary analytical framework for understanding market mortality cycles.</p></div>
                         </div>
                     </div>
-
                     <button class="slider-btn prev" id="sliderPrev" aria-label="Previous slide">❮</button>
                     <button class="slider-btn next" id="sliderNext" aria-label="Next slide">❯</button>
                 </div>
-
                 <div class="slider-dots" id="sliderDots" role="tablist" aria-label="Slide navigation">
                     <button class="slider-dot active" data-slide="0" role="tab" aria-selected="true" aria-label="Go to slide 1"></button>
                     <button class="slider-dot" data-slide="1" role="tab" aria-selected="false" aria-label="Go to slide 2"></button>
@@ -1929,119 +506,76 @@
             </div>
         </section>
 
-        <!-- ===== TESTIMONIALS ===== -->
-        <section class="section testimonials" id="testimonials" aria-labelledby="testimonials-title">
+        <!-- MARKET KNOWLEDGE QUIZ -->
+        <section class="section quiz-section" id="quiz" aria-labelledby="quiz-title">
             <div class="container">
                 <div class="section-header animate-on-scroll">
-                    <span class="section-tag">Testimonials</span>
-                    <h2 id="testimonials-title" class="section-title">What People <span class="gradient-text">Say About Us</span></h2>
-                    <p class="section-desc">Hear from researchers, analysts, and professionals who trust The Dead Market.</p>
+                    <span class="section-tag">Test Your Knowledge</span>
+                    <h2 id="quiz-title" class="section-title">Market <span class="gradient-text">Knowledge Quiz</span></h2>
+                    <p class="section-desc">10 questions spanning global markets, economics, and financial theory. How well do you really know the market?</p>
                 </div>
-
-                <div class="testimonials-grid">
-                    <article class="testimonial-card animate-on-scroll">
-                        <span class="testimonial-quote" aria-hidden="true">"</span>
-                        <div class="testimonial-stars" aria-label="5 out of 5 stars">
-                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                <div class="quiz-wrapper animate-on-scroll">
+                    <div class="quiz-progress-bar-track" aria-hidden="true">
+                        <div class="quiz-progress-bar-fill" id="quizProgressFill"></div>
+                    </div>
+                    <div class="quiz-meta">
+                        <span class="quiz-counter" id="quizCounter">Question 1 of 10</span>
+                        <span class="quiz-score-display" id="quizScoreDisplay">Score: 0</span>
+                    </div>
+                    <div class="quiz-card" id="quizCard">
+                        <span class="quiz-q-number" id="quizQNumber">Q1</span>
+                        <p class="quiz-question-text" id="quizQuestionText"></p>
+                        <div class="quiz-options" id="quizOptions" role="list"></div>
+                        <div class="quiz-explanation" id="quizExplanation"></div>
+                        <button class="quiz-next-btn" id="quizNextBtn">Next Question →</button>
+                    </div>
+                    <div class="quiz-result" id="quizResult" aria-live="polite">
+                        <span class="result-trophy" id="resultTrophy" aria-hidden="true">🏆</span>
+                        <div class="result-score-circle">
+                            <div class="result-score-number" id="resultScoreNum">0</div>
+                            <div class="result-score-total">out of 10</div>
                         </div>
-                        <p class="testimonial-text">
-                            "The Dead Market's research has completely transformed how I view market dynamics. Kallol's analytical depth is unmatched in the independent research space. Essential reading for any serious analyst."
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="testimonial-avatar">DR</div>
-                            <div class="testimonial-info">
-                                <h4>Dr. Rachel Monroe</h4>
-                                <span>Senior Economist, World Bank</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="testimonial-card animate-on-scroll">
-                        <span class="testimonial-quote" aria-hidden="true">"</span>
-                        <div class="testimonial-stars" aria-label="5 out of 5 stars">
-                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "A groundbreaking platform that dares to question conventional market wisdom. The data-driven approach and innovative methodology set a new standard for independent financial research."
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="testimonial-avatar">MK</div>
-                            <div class="testimonial-info">
-                                <h4>Michael Kowalski</h4>
-                                <span>Portfolio Manager, Goldman Sachs</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="testimonial-card animate-on-scroll">
-                        <span class="testimonial-quote" aria-hidden="true">"</span>
-                        <div class="testimonial-stars" aria-label="5 out of 5 stars">
-                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                        </div>
-                        <p class="testimonial-text">
-                            "Kallol Chakrabarti's research on systemic risk networks predicted market vulnerabilities that mainstream analysis completely overlooked. Truly invaluable independent work."
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="testimonial-avatar">SA</div>
-                            <div class="testimonial-info">
-                                <h4>Dr. Sarah Aoki</h4>
-                                <span>Professor of Finance, MIT</span>
-                            </div>
-                        </div>
-                    </article>
+                        <h3 class="result-title" id="resultTitle">Quiz Complete!</h3>
+                        <p class="result-message" id="resultMessage"></p>
+                        <span class="result-grade-badge" id="resultGradeBadge"></span>
+                        <br><br>
+                        <button class="quiz-restart-btn" id="quizRestartBtn">Retake Quiz ↺</button>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- ===== LATEST UPDATES ===== -->
+        <!-- LATEST UPDATES -->
         <section class="section updates" id="updates" aria-labelledby="updates-title">
             <div class="container">
                 <div class="section-header animate-on-scroll">
                     <span class="section-tag">Latest Updates</span>
-                    <h2 id="updates-title" class="section-title">Recent <span class="gradient-text">Publications & News</span></h2>
+                    <h2 id="updates-title" class="section-title">Recent <span class="gradient-text">Publications &amp; News</span></h2>
                     <p class="section-desc">Stay up to date with our latest research findings and market analyses.</p>
                 </div>
-
                 <div class="updates-grid">
                     <article class="update-card animate-on-scroll">
-                        <div class="update-image update-1">
-                            <span class="update-category">Research Paper</span>
-                            📄
-                        </div>
+                        <div class="update-image update-1"><span class="update-category">Research Paper</span>📄</div>
                         <div class="update-content">
-                            <div class="update-date">
-                                <span>📅</span> January 15, 2025
-                            </div>
+                            <div class="update-date"><span>📅</span> January 15, 2025</div>
                             <h3>The Silent Collapse: Understanding Market Deaths in 2024</h3>
                             <p>An in-depth analysis of market sectors that quietly declined in 2024, revealing patterns that predict future market vulnerabilities.</p>
                             <a href="#" class="update-link" aria-label="Read full article about The Silent Collapse">Read Article →</a>
                         </div>
                     </article>
-
                     <article class="update-card animate-on-scroll">
-                        <div class="update-image update-2">
-                            <span class="update-category">Analysis</span>
-                            📊
-                        </div>
+                        <div class="update-image update-2"><span class="update-category">Analysis</span>📊</div>
                         <div class="update-content">
-                            <div class="update-date">
-                                <span>📅</span> January 8, 2025
-                            </div>
+                            <div class="update-date"><span>📅</span> January 8, 2025</div>
                             <h3>AI and the Future of Dead Markets: A Predictive Framework</h3>
                             <p>How artificial intelligence is reshaping our understanding of market mortality and creating new tools for predicting economic downturns.</p>
                             <a href="#" class="update-link" aria-label="Read full article about AI and Dead Markets">Read Article →</a>
                         </div>
                     </article>
-
                     <article class="update-card animate-on-scroll">
-                        <div class="update-image update-3">
-                            <span class="update-category">Report</span>
-                            📋
-                        </div>
+                        <div class="update-image update-3"><span class="update-category">Report</span>📋</div>
                         <div class="update-content">
-                            <div class="update-date">
-                                <span>📅</span> December 28, 2024
-                            </div>
+                            <div class="update-date"><span>📅</span> December 28, 2024</div>
                             <h3>Global Economic Outlook: What Dead Markets Tell Us About 2025</h3>
                             <p>Our comprehensive annual report examining economic trends, emerging risks, and opportunities identified through dead market analysis.</p>
                             <a href="#" class="update-link" aria-label="Read full article about Global Economic Outlook">Read Article →</a>
@@ -2051,13 +585,12 @@
             </div>
         </section>
 
-        <!-- ===== NEWSLETTER ===== -->
+        <!-- NEWSLETTER -->
         <section class="section newsletter" id="newsletter" aria-labelledby="newsletter-title">
             <div class="newsletter-inner animate-on-scroll">
                 <span class="section-tag">Stay Connected</span>
                 <h2 id="newsletter-title" class="section-title">Subscribe to Our <span class="gradient-text">Newsletter</span></h2>
                 <p class="section-desc">Get the latest research insights, market analyses, and exclusive content delivered directly to your inbox.</p>
-
                 <form class="newsletter-form" id="newsletterForm" novalidate aria-label="Newsletter subscription form">
                     <label for="newsletter-email" class="sr-only">Email address</label>
                     <input type="email" id="newsletter-email" class="newsletter-input" placeholder="Enter your email address" required aria-required="true">
@@ -2067,7 +600,7 @@
             </div>
         </section>
 
-        <!-- ===== CONTACT ===== -->
+        <!-- CONTACT -->
         <section class="section contact" id="contact" aria-labelledby="contact-title">
             <div class="container">
                 <div class="section-header animate-on-scroll">
@@ -2075,59 +608,23 @@
                     <h2 id="contact-title" class="section-title">Contact <span class="gradient-text">Us</span></h2>
                     <p class="section-desc">Have questions about our research or interested in collaboration? We'd love to hear from you.</p>
                 </div>
-
                 <div class="contact-grid">
                     <div class="contact-info animate-on-scroll">
                         <h3>Let's Connect</h3>
                         <p>Whether you're a fellow researcher, institutional investor, or simply curious about our work, don't hesitate to reach out. We welcome collaboration and knowledge sharing.</p>
-
                         <div class="contact-details">
-                            <div class="contact-item">
-                                <span class="icon" aria-hidden="true">📧</span>
-                                <div>
-                                    <div class="label">Email</div>
-                                    <div class="text">research@thedeadmarket.com</div>
-                                </div>
-                            </div>
-                            <div class="contact-item">
-                                <span class="icon" aria-hidden="true">📍</span>
-                                <div>
-                                    <div class="label">Location</div>
-                                    <div class="text">Global — Independent Research</div>
-                                </div>
-                            </div>
-                            <div class="contact-item">
-                                <span class="icon" aria-hidden="true">🕐</span>
-                                <div>
-                                    <div class="label">Response Time</div>
-                                    <div class="text">Within 24-48 hours</div>
-                                </div>
-                            </div>
+                            <div class="contact-item"><span class="icon" aria-hidden="true">📧</span><div><div class="label">Email</div><div class="text">kallolchitralimagicpen@gmail.com</div></div></div>
+                            <div class="contact-item"><span class="icon" aria-hidden="true">🔗</span><div><div class="label">Platform</div><div class="text" style="font-size:0.82rem;word-break:break-all;"><a href="https://helixoriginator.github.io/dead-market-economic-research-platform/" target="_blank" rel="noopener" style="color:var(--accent-red);">helixoriginator.github.io/dead-market-economic-research-platform</a></div></div></div>
+                            <div class="contact-item"><span class="icon" aria-hidden="true">📍</span><div><div class="label">Location</div><div class="text">Global — Independent Research (Remote)</div></div></div>
+                            <div class="contact-item"><span class="icon" aria-hidden="true">🕐</span><div><div class="label">Response Time</div><div class="text">Within 24-48 hours</div></div></div>
                         </div>
                     </div>
-
                     <div class="contact-form-wrapper animate-on-scroll">
                         <form id="contactForm" novalidate aria-label="Contact form">
-                            <div class="form-group">
-                                <label for="contact-name">Full Name</label>
-                                <input type="text" id="contact-name" placeholder="John Doe" required aria-required="true">
-                                <div class="field-error" id="nameError">Please enter your name.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="contact-email">Email Address</label>
-                                <input type="email" id="contact-email" placeholder="john@example.com" required aria-required="true">
-                                <div class="field-error" id="emailError">Please enter a valid email address.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="contact-subject">Subject</label>
-                                <input type="text" id="contact-subject" placeholder="Research Inquiry" required aria-required="true">
-                                <div class="field-error" id="subjectError">Please enter a subject.</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="contact-message">Message</label>
-                                <textarea id="contact-message" placeholder="Tell us about your inquiry..." required aria-required="true"></textarea>
-                                <div class="field-error" id="messageError">Please enter your message.</div>
-                            </div>
+                            <div class="form-group"><label for="contact-name">Full Name</label><input type="text" id="contact-name" placeholder="John Doe" required aria-required="true"><div class="field-error" id="nameError">Please enter your name.</div></div>
+                            <div class="form-group"><label for="contact-email">Email Address</label><input type="email" id="contact-email" placeholder="john@example.com" required aria-required="true"><div class="field-error" id="emailError">Please enter a valid email address.</div></div>
+                            <div class="form-group"><label for="contact-subject">Subject</label><input type="text" id="contact-subject" placeholder="Research Inquiry" required aria-required="true"><div class="field-error" id="subjectError">Please enter a subject.</div></div>
+                            <div class="form-group"><label for="contact-message">Message</label><textarea id="contact-message" placeholder="Tell us about your inquiry..." required aria-required="true"></textarea><div class="field-error" id="messageError">Please enter your message.</div></div>
                             <button type="submit" class="submit-btn">Send Message →</button>
                             <div class="contact-form-message" id="contactFormMessage" role="alert" aria-live="polite"></div>
                         </form>
@@ -2137,20 +634,15 @@
         </section>
     </main>
 
-    <!-- ===== BACK TO TOP ===== -->
     <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
-    <!-- ===== FOOTER ===== -->
     <footer class="footer" role="contentinfo">
         <div class="footer-grid">
             <div class="footer-brand">
-                <a href="#" class="logo" aria-label="The Dead Market Home">
-                    <span class="logo-icon">💀</span>
-                    <span class="logo-text">The <span class="highlight">Dead</span> Market</span>
-                </a>
-                <p>A comprehensive independent research platform exploring market dynamics, economic analysis, and global financial trends.</p>
-                <p style="font-size: 0.85rem; color: var(--accent-gold);">Created by Kallol Chakrabarti<br>Global Independent Researcher</p>
-                <div class="footer-social" style="margin-top: 20px;">
+                <a href="#" class="logo" aria-label="The Dead Market Home"><span class="logo-icon">💀</span><span class="logo-text">The <span class="highlight">Dead</span> Market</span></a>
+                <p>An independent economic research platform exploring market mortality, systemic risk, and financial dysfunction — unaffiliated with any institution or commercial body.</p>
+                <p style="font-size:0.85rem;color:var(--accent-gold);">Created by Kallol Chakrabarti<br>Global Independent Researcher</p>
+                <div class="footer-social" style="margin-top:20px;">
                     <a href="#" class="social-link" aria-label="Twitter">𝕏</a>
                     <a href="#" class="social-link" aria-label="LinkedIn">in</a>
                     <a href="#" class="social-link" aria-label="GitHub">⌨</a>
@@ -2158,393 +650,333 @@
                     <a href="#" class="social-link" aria-label="RSS Feed">☰</a>
                 </div>
             </div>
-
-            <div class="footer-column">
-                <h4>Research</h4>
-                <ul class="footer-links">
-                    <li><a href="#">Market Analysis</a></li>
-                    <li><a href="#">Systemic Risk</a></li>
-                    <li><a href="#">Behavioral Finance</a></li>
-                    <li><a href="#">Emerging Markets</a></li>
-                    <li><a href="#">Crypto Research</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h4>Resources</h4>
-                <ul class="footer-links">
-                    <li><a href="#">Publications</a></li>
-                    <li><a href="#">Data Sets</a></li>
-                    <li><a href="#">Methodology</a></li>
-                    <li><a href="#">API Access</a></li>
-                    <li><a href="#">Documentation</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h4>Company</h4>
-                <ul class="footer-links">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Our Team</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Press Kit</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
+            <div class="footer-column"><h4>Research</h4><ul class="footer-links"><li><a href="#">Market Analysis</a></li><li><a href="#">Systemic Risk</a></li><li><a href="#">Behavioral Finance</a></li><li><a href="#">Emerging Markets</a></li><li><a href="#">Crypto Research</a></li></ul></div>
+            <div class="footer-column"><h4>Resources</h4><ul class="footer-links"><li><a href="#">Publications</a></li><li><a href="#">Data Sets</a></li><li><a href="#">Methodology</a></li><li><a href="#">API Access</a></li><li><a href="#">Documentation</a></li></ul></div>
+            <div class="footer-column"><h4>Company</h4><ul class="footer-links"><li><a href="#">About Us</a></li><li><a href="#">Our Team</a></li><li><a href="#">Careers</a></li><li><a href="#">Press Kit</a></li><li><a href="#">Contact</a></li></ul></div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 The Dead Market. All rights reserved. Created by Kallol Chakrabarti.</p>
+            <div class="footer-bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#disclaimer">Disclaimer</a></div>
         </div>
 
-        <div class="footer-bottom">
-            <p>&copy; 2025 The Dead Market. All rights reserved. Created by Kallol Chakrabarti.</p>
-            <div class="footer-bottom-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Disclaimer</a>
-            </div>
+        <!-- DISCLAIMER -->
+        <div id="disclaimer" style="max-width:1200px;margin:0 auto;padding:30px 0 40px;border-top:1px solid rgba(230,57,70,0.15);">
+            <p style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:14px;">⚠ Disclaimer</p>
+            <p style="font-size:0.82rem;color:#555;line-height:1.85;max-width:1000px;">
+                <strong style="color:#666;">Independent Research Platform.</strong> The Dead Market is an independent, self-funded research platform created and operated solely by Kallol Chakrabarti. It is not affiliated with, endorsed by, or connected to any financial institution, brokerage firm, investment bank, government body, regulatory authority, or academic institution.
+            </p>
+            <p style="font-size:0.82rem;color:#555;line-height:1.85;max-width:1000px;margin-top:10px;">
+                <strong style="color:#666;">Not Financial Advice.</strong> All content published on this platform — including research papers, analytical reports, data visualisations, and commentary — is intended solely for informational, educational, and research purposes. Nothing on this platform constitutes financial advice, investment advice, trading recommendations, or solicitation to buy or sell any financial instrument. Readers should conduct their own due diligence and consult a qualified financial professional before making any investment decisions.
+            </p>
+            <p style="font-size:0.82rem;color:#555;line-height:1.85;max-width:1000px;margin-top:10px;">
+                <strong style="color:#666;">No Guarantees.</strong> While every effort is made to ensure accuracy and rigour, the research presented here is exploratory and analytical in nature. No guarantees are made regarding the completeness, accuracy, or timeliness of any information. Market conditions change rapidly and past analysis does not guarantee future outcomes.
+            </p>
+            <p style="font-size:0.82rem;color:#555;line-height:1.85;max-width:1000px;margin-top:10px;">
+                <strong style="color:#666;">Intellectual Property.</strong> All research frameworks, written content, and analytical methodologies published on this platform are the original intellectual property of Kallol Chakrabarti. Permitted uses include academic citation with proper attribution and non-commercial research reference. Commercial reproduction or republication without written consent is prohibited.
+            </p>
+            <p style="font-size:0.82rem;color:#555;line-height:1.85;max-width:1000px;margin-top:10px;">
+                <strong style="color:#666;">Recommended Citation:</strong> Chakrabarti, K. (2026). <em>The Dead Market: Economic Research Platform</em> [Research Platform]. https://helixoriginator.github.io/dead-market-economic-research-platform/
+            </p>
         </div>
     </footer>
 
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ===== LOADING SCREEN =====
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 1500);
-        });
+    // LOADING
+    window.addEventListener('load', () => { setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 1500); });
 
-        // ===== PARTICLES =====
-        (function createParticles() {
-            const container = document.getElementById('particles');
-            const count = 30;
-            for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
-                particle.style.width = particle.style.height = (Math.random() * 3 + 1) + 'px';
-                const colors = ['#e63946', '#d4a942', '#4a90d9', '#e0e0e0'];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                container.appendChild(particle);
-            }
-        })();
-
-        // ===== HEADER SCROLL =====
-        const header = document.getElementById('header');
-        let lastScroll = 0;
-
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            if (currentScroll > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-            lastScroll = currentScroll;
-        });
-
-        // ===== HAMBURGER MENU =====
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
-
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('open');
-            const isOpen = navMenu.classList.contains('open');
-            hamburger.setAttribute('aria-expanded', isOpen);
-            document.body.style.overflow = isOpen ? 'hidden' : '';
-        });
-
-        // Close menu on link click
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            });
-        });
-
-        // ===== ACTIVE NAV ON SCROLL =====
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                if (window.pageYOffset >= sectionTop) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
-            });
-        });
-
-        // ===== COUNTER ANIMATION =====
-        function animateCounters() {
-            const counters = document.querySelectorAll('.stat-number[data-target]');
-            counters.forEach(counter => {
-                const target = parseInt(counter.dataset.target);
-                const duration = 2000;
-                const step = target / (duration / 16);
-                let current = 0;
-
-                const update = () => {
-                    current += step;
-                    if (current < target) {
-                        counter.textContent = Math.floor(current) + '+';
-                        requestAnimationFrame(update);
-                    } else {
-                        counter.textContent = target + '+';
-                    }
-                };
-
-                update();
-            });
+    // PARTICLES
+    (function() {
+        const c = document.getElementById('particles'), n = 30;
+        for (let i = 0; i < n; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 8 + 's';
+            p.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            p.style.width = p.style.height = (Math.random() * 3 + 1) + 'px';
+            p.style.background = ['#e63946','#d4a942','#4a90d9','#e0e0e0'][Math.floor(Math.random()*4)];
+            c.appendChild(p);
         }
+    })();
 
-        // Trigger counter when hero is visible
-        const heroObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    heroObserver.disconnect();
-                }
-            });
-        }, { threshold: 0.3 });
+    // HEADER
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => { header.classList.toggle('scrolled', window.pageYOffset > 50); });
 
-        const heroStats = document.querySelector('.hero-stats');
-        if (heroStats) heroObserver.observe(heroStats);
+    // HAMBURGER
+    const hamburger = document.getElementById('hamburger'), navMenu = document.getElementById('navMenu');
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('open');
+        const open = navMenu.classList.contains('open');
+        hamburger.setAttribute('aria-expanded', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+    });
+    document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => {
+        hamburger.classList.remove('active'); navMenu.classList.remove('open');
+        hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow = '';
+    }));
 
-        // ===== SCROLL ANIMATIONS =====
-        const animateObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('animated');
-                    }, index * 100);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    // ACTIVE NAV
+    const sections = document.querySelectorAll('section[id]'), navLinks = document.querySelectorAll('.nav-link');
+    window.addEventListener('scroll', () => {
+        let cur = '';
+        sections.forEach(s => { if (window.pageYOffset >= s.offsetTop - 100) cur = s.id; });
+        navLinks.forEach(l => { l.classList.toggle('active', l.getAttribute('href') === '#' + cur); });
+    });
 
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            animateObserver.observe(el);
-        });
+    // COUNTERS (removed — stats now display static factual values)
 
-        // ===== IMAGE SLIDER =====
-        const slider = document.getElementById('slider');
-        const slides = slider.querySelectorAll('.slide');
-        const prevBtn = document.getElementById('sliderPrev');
-        const nextBtn = document.getElementById('sliderNext');
-        const dots = document.querySelectorAll('.slider-dot');
-        let currentSlide = 0;
-        let autoSlideInterval;
+    // SCROLL ANIMATIONS
+    const ao = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => { if (e.isIntersecting) setTimeout(() => e.target.classList.add('animated'), i*100); });
+    }, {threshold:0.1, rootMargin:'0px 0px -50px 0px'});
+    document.querySelectorAll('.animate-on-scroll').forEach(el => ao.observe(el));
 
-        function goToSlide(index) {
-            if (index < 0) index = slides.length - 1;
-            if (index >= slides.length) index = 0;
-            currentSlide = index;
-            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+    // SLIDER
+    const slider = document.getElementById('slider');
+    const slides = slider.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slider-dot');
+    let cur = 0, asi;
+    function goTo(i) {
+        if (i < 0) i = slides.length - 1;
+        if (i >= slides.length) i = 0;
+        cur = i; slider.style.transform = `translateX(-${cur*100}%)`;
+        dots.forEach((d,j) => { d.classList.toggle('active', j===cur); d.setAttribute('aria-selected', j===cur); });
+    }
+    function startAS() { asi = setInterval(() => goTo(cur+1), 5000); }
+    function resetAS() { clearInterval(asi); startAS(); }
+    document.getElementById('sliderPrev').addEventListener('click', () => { goTo(cur-1); resetAS(); });
+    document.getElementById('sliderNext').addEventListener('click', () => { goTo(cur+1); resetAS(); });
+    dots.forEach(d => d.addEventListener('click', () => { goTo(parseInt(d.dataset.slide)); resetAS(); }));
+    document.querySelector('.slider-container').addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') { goTo(cur-1); resetAS(); }
+        if (e.key === 'ArrowRight') { goTo(cur+1); resetAS(); }
+    });
+    let tsx = 0, tex = 0;
+    slider.addEventListener('touchstart', e => { tsx = e.changedTouches[0].screenX; }, {passive:true});
+    slider.addEventListener('touchend', e => {
+        tex = e.changedTouches[0].screenX;
+        const d = tsx - tex;
+        if (Math.abs(d) > 50) { goTo(d > 0 ? cur+1 : cur-1); resetAS(); }
+    }, {passive:true});
+    startAS();
 
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentSlide);
-                dot.setAttribute('aria-selected', i === currentSlide);
-            });
+    // ===== QUIZ =====
+    const quizData = [
+        {
+            question: "What does a 'Dead Market' typically refer to in financial terminology?",
+            options: ["A market with no listed companies", "A market with very low trading volume and minimal price movement", "A market that has officially been shut down by regulators", "A market exclusively for distressed debt instruments"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> A 'Dead Market' describes a market with very low trading volume, minimal liquidity, and negligible price volatility. Buyers and sellers are so scarce that executing orders at desired prices becomes extremely difficult — the market appears lifeless. This differs from a closed or delisted market."
+        },
+        {
+            question: "Which of the following best describes 'market liquidity'?",
+            options: ["The total cash reserves held by a central bank", "The ease with which an asset can be bought or sold without affecting its price", "The ratio of a company's current assets to its current liabilities", "The interest rate at which banks lend to each other overnight"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> Market liquidity describes how easily an asset can be converted to cash at a stable price. High liquidity enables fast trades with minimal price impact. Low liquidity (characteristic of dead markets) means wide bid-ask spreads and difficulty finding willing counterparties."
+        },
+        {
+            question: "In behavioral economics, what is 'herd behavior' in financial markets?",
+            options: ["Investors following algorithmic trading signals", "Central banks coordinating monetary policy", "Investors mimicking the actions of a larger group rather than doing independent analysis", "The clustering of financial institutions in one geographic region"],
+            answer: 2,
+            explanation: "<strong>Correct answer: C.</strong> Herd behavior occurs when investors abandon independent analysis and follow the crowd instead. This amplifies market movements — fueling bubbles (mass buying) and crashes (mass selling). It is a primary driver of systemic risk, replacing rational price signals with collective panic or euphoria."
+        },
+        {
+            question: "What is 'systemic risk' in the context of global financial markets?",
+            options: ["The risk that a single company's stock price will fall sharply", "The risk of collapse of an entire financial system due to interconnected failures", "The risk that interest rates will rise unexpectedly", "The risk of a cyberattack on a stock exchange"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> Systemic risk is the danger that a failure in one institution or market segment cascades through the entire financial system via interconnectedness. The 2008 global financial crisis is the definitive example — Lehman Brothers' collapse triggered a chain reaction threatening the entire global banking system."
+        },
+        {
+            question: "Which indicator is most commonly used to measure near-term volatility expectations in the US stock market?",
+            options: ["The LIBOR rate", "The Consumer Price Index (CPI)", "The CBOE Volatility Index (VIX)", "The Purchasing Managers' Index (PMI)"],
+            answer: 2,
+            explanation: "<strong>Correct answer: C.</strong> The VIX (the 'fear gauge') measures the market's expectation of near-term volatility derived from S&P 500 options pricing. A high VIX signals investor fear and uncertainty; a low VIX indicates market complacency. It is the gold-standard tool for gauging market sentiment."
+        },
+        {
+            question: "What typically causes a market bubble to burst?",
+            options: ["A period of stable growth followed by a gradual policy-driven correction", "Rapid asset price inflation driven by speculation, which collapses when sentiment reverses", "A government-engineered price ceiling on overvalued securities", "A technical chart pattern indicating a short-term price reversal"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> A market bubble forms when asset prices rise far above intrinsic value, fueled by speculative buying and irrational exuberance. The bubble bursts when sentiment shifts — triggered by rising interest rates, regulatory action, or a loss of confidence — causing rapid, often devastating price collapse. Classic examples include the Dot-com bubble (2000) and the US housing bubble (2008)."
+        },
+        {
+            question: "In the Efficient Market Hypothesis (EMH), what does the 'semi-strong form' claim?",
+            options: ["Only technical analysis can generate excess returns", "All publicly available information is already fully reflected in asset prices", "Only insider information can consistently beat the market", "Markets are efficient only during periods of high trading volume"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> The semi-strong form of EMH holds that all publicly available information — earnings reports, economic data, news — is immediately and fully incorporated into asset prices. This means neither fundamental nor technical analysis can consistently generate abnormal returns. Only private insider information could theoretically provide a consistent edge."
+        },
+        {
+            question: "What does 'quantitative easing' (QE) involve, and what is its primary intended effect?",
+            options: ["Raising interest rates to reduce inflation in an overheated economy", "A central bank purchasing financial assets to inject money into the economy and lower long-term rates", "Governments issuing new bonds to fund infrastructure projects", "Restricting the money supply to strengthen the national currency"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> Quantitative Easing (QE) is a non-conventional monetary policy tool where a central bank purchases large amounts of government bonds or securities. This injects liquidity into the financial system, suppresses long-term interest rates, encourages borrowing and investment, and stimulates economic activity — especially when short-term rates are already near zero."
+        },
+        {
+            question: "Which of the following best explains the 'contagion effect' in emerging market financial crises?",
+            options: ["Diseases affecting agricultural output in developing economies", "The spread of financial distress from one country or market to others through trade, capital flows, and investor sentiment", "A computer virus disrupting multiple emerging market trading platforms simultaneously", "The rapid adoption of a competing currency replacing an emerging market's local currency"],
+            answer: 1,
+            explanation: "<strong>Correct answer: B.</strong> Financial contagion occurs when a crisis in one economy spreads to others through interconnected channels — trade ties, capital market links, and investor panic. The 1997 Asian Financial Crisis is the textbook case: Thailand's baht collapse triggered cascading currency crises across South Korea, Indonesia, and Malaysia, despite those countries having differing economic fundamentals."
+        },
+        {
+            question: "What is the core insight of 'Behavioral Finance' that distinguishes it from classical finance theory?",
+            options: ["Only institutional investors can consistently profit from market inefficiencies", "Financial markets are perfectly rational and always price assets correctly", "Cognitive biases and emotional factors cause investors to make predictably irrational decisions", "Algorithmic trading has made human behavioral factors irrelevant to modern markets"],
+            answer: 2,
+            explanation: "<strong>Correct answer: C.</strong> Behavioral Finance challenges the rational investor assumption of classical theory. Pioneers like Daniel Kahneman and Richard Thaler demonstrated that systematic cognitive biases — loss aversion, overconfidence, anchoring, recency bias — cause predictably irrational decisions. These biases create the market anomalies, mispricings, bubbles and crashes that classical theory insists cannot exist."
         }
+    ];
 
-        function startAutoSlide() {
-            autoSlideInterval = setInterval(() => goToSlide(currentSlide + 1), 5000);
+    let qState = { current: 0, score: 0, answered: false };
+    const qCounter = document.getElementById('quizCounter');
+    const qScore = document.getElementById('quizScoreDisplay');
+    const qFill = document.getElementById('quizProgressFill');
+    const qNum = document.getElementById('quizQNumber');
+    const qText = document.getElementById('quizQuestionText');
+    const qOpts = document.getElementById('quizOptions');
+    const qExpl = document.getElementById('quizExplanation');
+    const qNext = document.getElementById('quizNextBtn');
+    const qCard = document.getElementById('quizCard');
+    const qResult = document.getElementById('quizResult');
+    const qRestart = document.getElementById('quizRestartBtn');
+    const letters = ['A','B','C','D'];
+
+    function renderQ() {
+        const q = quizData[qState.current];
+        qState.answered = false;
+        qCounter.textContent = `Question ${qState.current + 1} of ${quizData.length}`;
+        qScore.textContent = `Score: ${qState.score}`;
+        qFill.style.width = `${(qState.current / quizData.length) * 100}%`;
+        qNum.textContent = `Q${qState.current + 1}`;
+        qText.textContent = q.question;
+        qOpts.innerHTML = '';
+        qExpl.className = 'quiz-explanation';
+        qExpl.innerHTML = '';
+        qNext.className = 'quiz-next-btn';
+        qCard.style.display = '';
+        qResult.className = 'quiz-result';
+
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-option';
+            btn.setAttribute('role','listitem');
+            btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span style="flex:1">${opt}</span><span class="option-status-icon" aria-hidden="true"></span>`;
+            btn.addEventListener('click', () => handleAns(i, btn, q));
+            qOpts.appendChild(btn);
+        });
+    }
+
+    function handleAns(sel, selBtn, q) {
+        if (qState.answered) return;
+        qState.answered = true;
+        qOpts.querySelectorAll('.quiz-option').forEach((btn, i) => {
+            btn.disabled = true;
+            const icon = btn.querySelector('.option-status-icon');
+            if (i === q.answer) { btn.classList.add('correct'); icon.textContent = '✓'; }
+            else if (i === sel) { btn.classList.add('wrong'); icon.textContent = '✗'; }
+        });
+        if (sel === q.answer) {
+            qState.score++;
+            qScore.textContent = `Score: ${qState.score}`;
+            qExpl.innerHTML = q.explanation;
+        } else {
+            qExpl.innerHTML = q.explanation.replace('<strong>Correct answer:', '<strong>The correct answer is');
         }
+        qExpl.classList.add('visible');
+        qNext.classList.add('visible');
+        qNext.textContent = qState.current === quizData.length - 1 ? 'See Results 🏆' : 'Next Question →';
+    }
 
-        function resetAutoSlide() {
-            clearInterval(autoSlideInterval);
-            startAutoSlide();
+    qNext.addEventListener('click', () => {
+        qState.current++;
+        if (qState.current >= quizData.length) showResults();
+        else renderQ();
+    });
+
+    function showResults() {
+        qCard.style.display = 'none';
+        qFill.style.width = '100%';
+        qCounter.textContent = 'Quiz Complete!';
+        qScore.textContent = `Final Score: ${qState.score}`;
+        const s = qState.score;
+        let trophy, title, msg, gc, gt;
+        if (s >= 9)      { trophy='🏆'; title='Outstanding!';   gc='grade-excellent'; gt='Market Expert';   msg='Exceptional performance! Your understanding of global markets, behavioral economics, and financial theory is at a professional research level.'; }
+        else if (s >= 7) { trophy='🥇'; title='Excellent Work!'; gc='grade-good';      gt='Market Analyst';  msg='Strong performance! You have a solid grasp of market dynamics. Review the questions you missed to further sharpen your analytical edge.'; }
+        else if (s >= 5) { trophy='🥈'; title='Good Effort!';    gc='grade-average';   gt='Market Student';  msg='A decent foundation. Dive deeper into behavioral finance and systemic risk topics to elevate your market knowledge to the next level.'; }
+        else             { trophy='📚'; title='Keep Learning!';  gc='grade-poor';      gt='Market Beginner'; msg="There is plenty of room to grow. Explore The Dead Market's research sections to build your understanding from the ground up."; }
+        document.getElementById('resultTrophy').textContent = trophy;
+        document.getElementById('resultScoreNum').textContent = s;
+        document.getElementById('resultTitle').textContent = title;
+        document.getElementById('resultMessage').textContent = msg;
+        const badge = document.getElementById('resultGradeBadge');
+        badge.textContent = gt; badge.className = `result-grade-badge ${gc}`;
+        qResult.classList.add('visible');
+    }
+
+    qRestart.addEventListener('click', () => {
+        qState = { current: 0, score: 0, answered: false };
+        qFill.style.width = '0%';
+        renderQ();
+    });
+
+    renderQ();
+
+    // NEWSLETTER
+    document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const em = document.getElementById('newsletter-email'), msg = document.getElementById('newsletterMessage');
+        if (!em.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) {
+            msg.textContent = 'Please enter a valid email address.'; msg.className = 'form-message error'; return;
         }
+        msg.textContent = "✓ Thank you for subscribing! You'll receive our latest insights soon.";
+        msg.className = 'form-message success'; em.value = '';
+        setTimeout(() => { msg.className = 'form-message'; }, 5000);
+    });
 
-        prevBtn.addEventListener('click', () => {
-            goToSlide(currentSlide - 1);
-            resetAutoSlide();
+    // CONTACT
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let ok = true;
+        const n = document.getElementById('contact-name'), em = document.getElementById('contact-email'),
+              s = document.getElementById('contact-subject'), m = document.getElementById('contact-message'),
+              fm = document.getElementById('contactFormMessage');
+        [n,em,s,m].forEach(el => el.classList.remove('error'));
+        document.querySelectorAll('.field-error').forEach(el => el.style.display='none');
+        if (!n.value.trim()) { n.classList.add('error'); document.getElementById('nameError').style.display='block'; ok=false; }
+        if (!em.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) { em.classList.add('error'); document.getElementById('emailError').style.display='block'; ok=false; }
+        if (!s.value.trim()) { s.classList.add('error'); document.getElementById('subjectError').style.display='block'; ok=false; }
+        if (!m.value.trim()) { m.classList.add('error'); document.getElementById('messageError').style.display='block'; ok=false; }
+        if (!ok) { fm.textContent='Please fix the errors above.'; fm.style.display='block'; fm.style.color='#e63946'; return; }
+        fm.textContent="✓ Message sent successfully! We'll get back to you within 24-48 hours.";
+        fm.style.display='block'; fm.style.color='#4caf50'; this.reset();
+        setTimeout(() => { fm.style.display='none'; }, 5000);
+    });
+
+    // BACK TO TOP
+    const btt = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => { btt.classList.toggle('visible', window.pageYOffset > 500); });
+    btt.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
+
+    // SMOOTH SCROLL
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e) {
+            const t = document.querySelector(this.getAttribute('href'));
+            if (t) { e.preventDefault(); window.scrollTo({top: t.offsetTop - document.querySelector('.header').offsetHeight, behavior:'smooth'}); }
         });
+    });
 
-        nextBtn.addEventListener('click', () => {
-            goToSlide(currentSlide + 1);
-            resetAutoSlide();
-        });
-
-        dots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                goToSlide(parseInt(dot.dataset.slide));
-                resetAutoSlide();
-            });
-        });
-
-        // Keyboard navigation for slider
-        document.querySelector('.slider-container').addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') { goToSlide(currentSlide - 1); resetAutoSlide(); }
-            if (e.key === 'ArrowRight') { goToSlide(currentSlide + 1); resetAutoSlide(); }
-        });
-
-        // Touch/swipe support
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        slider.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        slider.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) goToSlide(currentSlide + 1);
-                else goToSlide(currentSlide - 1);
-                resetAutoSlide();
-            }
-        }, { passive: true });
-
-        startAutoSlide();
-
-        // ===== NEWSLETTER FORM =====
-        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('newsletter-email');
-            const message = document.getElementById('newsletterMessage');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            if (!email.value || !emailRegex.test(email.value)) {
-                message.textContent = 'Please enter a valid email address.';
-                message.className = 'form-message error';
-                email.focus();
-                return;
-            }
-
-            message.textContent = '✓ Thank you for subscribing! You\'ll receive our latest insights soon.';
-            message.className = 'form-message success';
-            email.value = '';
-
-            setTimeout(() => {
-                message.className = 'form-message';
-            }, 5000);
-        });
-
-        // ===== CONTACT FORM =====
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            let isValid = true;
-
-            const name = document.getElementById('contact-name');
-            const email = document.getElementById('contact-email');
-            const subject = document.getElementById('contact-subject');
-            const msg = document.getElementById('contact-message');
-            const formMessage = document.getElementById('contactFormMessage');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            // Reset errors
-            [name, email, subject, msg].forEach(el => el.classList.remove('error'));
-            document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
-
-            if (!name.value.trim()) {
-                name.classList.add('error');
-                document.getElementById('nameError').style.display = 'block';
-                isValid = false;
-            }
-
-            if (!email.value.trim() || !emailRegex.test(email.value)) {
-                email.classList.add('error');
-                document.getElementById('emailError').style.display = 'block';
-                isValid = false;
-            }
-
-            if (!subject.value.trim()) {
-                subject.classList.add('error');
-                document.getElementById('subjectError').style.display = 'block';
-                isValid = false;
-            }
-
-            if (!msg.value.trim()) {
-                msg.classList.add('error');
-                document.getElementById('messageError').style.display = 'block';
-                isValid = false;
-            }
-
-            if (!isValid) {
-                formMessage.textContent = 'Please fix the errors above.';
-                formMessage.className = 'contact-form-message error';
-                formMessage.style.display = 'block';
-                formMessage.style.color = '#e63946';
-                return;
-            }
-
-            formMessage.textContent = '✓ Message sent successfully! We\'ll get back to you within 24-48 hours.';
-            formMessage.className = 'contact-form-message success';
-            formMessage.style.display = 'block';
-            formMessage.style.color = '#4caf50';
-
-            this.reset();
-
-            setTimeout(() => {
-                formMessage.style.display = 'none';
-            }, 5000);
-        });
-
-        // ===== BACK TO TOP =====
-        const backToTop = document.getElementById('backToTop');
-
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 500) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        });
-
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // ===== SMOOTH SCROLL FOR ANCHOR LINKS =====
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    e.preventDefault();
-                    const headerHeight = document.querySelector('.header').offsetHeight;
-                    const targetPosition = target.offsetTop - headerHeight;
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // ===== KEYBOARD TRAP FOR MOBILE MENU =====
-        navMenu.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && navMenu.classList.contains('open')) {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-                hamburger.focus();
-            }
-        });
-
-        // ===== CLOSE MOBILE MENU ON OUTSIDE CLICK =====
-        document.addEventListener('click', (e) => {
-            if (navMenu.classList.contains('open') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            }
-        });
+    // MOBILE MENU CLOSE
+    navMenu.addEventListener('keydown', e => {
+        if (e.key==='Escape' && navMenu.classList.contains('open')) {
+            hamburger.classList.remove('active'); navMenu.classList.remove('open');
+            hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; hamburger.focus();
+        }
+    });
+    document.addEventListener('click', e => {
+        if (navMenu.classList.contains('open') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+            hamburger.classList.remove('active'); navMenu.classList.remove('open');
+            hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow='';
+        }
+    });
     </script>
 </body>
 </html>
-```
